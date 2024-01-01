@@ -1,0 +1,4 @@
+[submodule "tools/wishbone-gen"]
+	path = tools/wishbone-gen
+	url = https://github.com/IvanVeloz/wishbone-gen.git
+	branch = fix-verilog-init

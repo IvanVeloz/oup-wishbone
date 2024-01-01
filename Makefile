@@ -1,23 +1,22 @@
-WBGEN2="./bin/wbgen2"
+WBGEN2="./tools/wishbone-gen/wbgen2"
 SOURCE="oup_wbgen2.wb"
-RTLTARGET="rtl/oup_wishbone.vhd"
-VERILOGTARGET="rtl/oup_wishbone.vhd"
+VHDLTARGET="rtl/oup_wishbone.vhd"
+VERILOGTARGET="rtl/oup_wishbone.v"
 SWTARGET="sw/oup_wishbone.h"
 DOCTARGET="docs/oup_wishbone.htm"
-FLAGS=-l vhdl -f html -H signals
+FLAGS=-f html -H signals
 
-# TODO: preppend source file checksums to output files
+all: verilog
 
-all: rtl
-
-rtl:
+vhdl:
 	mkdir -p ./rtl
 	mkdir -p ./sw
 	mkdir -p ./docs
 	$(WBGEN2) \
 		$(FLAGS) \
+		-l vhdl \
 		-D $(DOCTARGET) \
-		-V $(RTLTARGET) \
+		-V $(VHDLTARGET) \
 		-C $(SWTARGET) \
 		$(SOURCE)
 	sha256sum $(SOURCE) > .BUILDHASH
@@ -27,7 +26,8 @@ verilog:
 	mkdir -p ./sw
 	mkdir -p ./docs
 	$(WBGEN2) \
-		-l verilog -f html -H signals \
+		$(FLAGS) \
+		-l verilog \
 		-D $(DOCTARGET) \
 		-V $(VERILOGTARGET) \
 		-C $(SWTARGET) \
@@ -35,7 +35,7 @@ verilog:
 	sha256sum $(SOURCE) > .BUILDHASH
 	
 clean:
-	rm $(RTLTARGET)
-	rm $(SWTARGET)
-	rm $(DOCTARGET)
-	rm $(VERILOGTARGET)
+	rm -f \
+		$(SWTARGET) $(DOCTARGET) \
+		$(VERILOGTARGET) \
+		$(VHDLTARGET)
