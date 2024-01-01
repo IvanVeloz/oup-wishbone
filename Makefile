@@ -32,7 +32,7 @@ verilog:
 		-V $(VERILOGTARGET) \
 		-C $(SWTARGET) \
 		$(SOURCE)
-	sha256sum $(SOURCE) > .BUILDHASH
+	sha256sum $(SOURCE) > .buildhash
 	
 clean:
 	rm -f \
