@@ -23,4 +23,5 @@ If you are running under WSL, and get errors like
 /usr/bin/env: ‘lua\r’: No such file or directory
 make: *** [Makefile:9: rtl] Error 127
 ```
-try converting the file to Unix line endings. Use `dos2unix ./squish` to fix the error that happens when making wbgen2, and `dos2unix tools/wishbone-gen/wbgen2` to fix the error that happens when making the OUP files. The `dos2unix` tool can be installed on Ubuntu with `sudo apt-get install dos2unix`.
+this is because git is checking files out with Windows line endings (CRLF) instead of Unix line endings (LF). 
+To fix this, change your git configuration `git config --global core.autocrlf false` and clone a fresh version of the repo to start over with Unix line endings.
