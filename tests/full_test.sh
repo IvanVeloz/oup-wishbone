@@ -19,7 +19,7 @@ make
 
 echo "Making oup-wishbone"
 cd ${REPOROOT}
-make
+make --always-make
 
 echo "Verifying output hash"
 tests/verify_output_up_to_date.sh
