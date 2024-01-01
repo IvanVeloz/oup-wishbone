@@ -8,6 +8,9 @@ FLAGS=-f html -H signals
 
 all: verilog
 
+wbgen2:
+	$(MAKE) -C tools/wishbone-gen
+
 vhdl:
 	mkdir -p ./rtl
 	mkdir -p ./sw
@@ -39,3 +42,4 @@ clean:
 		$(SWTARGET) $(DOCTARGET) \
 		$(VERILOGTARGET) \
 		$(VHDLTARGET)
+
