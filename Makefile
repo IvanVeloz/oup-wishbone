@@ -19,7 +19,7 @@ vhdl:
 		-V $(VHDLTARGET) \
 		-C $(SWTARGET) \
 		$(SOURCE)
-	sha256sum $(SOURCE) > .BUILDHASH
+	sha256sum $(SOURCE) > .buildhash
 
 verilog:
 	mkdir -p ./rtl

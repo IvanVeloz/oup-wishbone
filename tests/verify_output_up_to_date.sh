@@ -1,10 +1,10 @@
-#! /bin/bash
+#! /bin/bash 
 CALLINGDIR=$(pwd)
 BASEDIR=$(dirname "$0")
 REPOROOT=${REPOROOT:=${BASEDIR}/..} # you can redefine it. Use ./ for current dir.
 SOURCE=${REPOROOT}/oup_wbgen2.wb
 SOURCESUM=$(sha256sum ${SOURCE} | awk '{print $1}')
-BUILDSUM=$(cat ${REPOROOT}/.BUILDHASH | awk '{print $1}')
+BUILDSUM=$(cat ${REPOROOT}/.buildhash | awk '{print $1}')
 
 if [ $SOURCESUM != $BUILDSUM ]; then
     echo "CRITICAL: build is out of date"
