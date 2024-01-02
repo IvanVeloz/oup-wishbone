@@ -14,6 +14,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Install dependencies
+      run: sudo apt-get -y install lua5.1
+    
     - name: Initialize submodules
       run: git submodule update --init --recursive
 
