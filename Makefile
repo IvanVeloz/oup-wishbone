@@ -5,16 +5,26 @@ VERILOGTARGET="rtl/oup_wishbone.v"
 SWTARGET="sw/oup_wishbone.h"
 DOCTARGET="docs/oup_wishbone.htm"
 FLAGS=-f html -H signals
+VERILOGFLAGS=-l verilog
+VHDLFLAGS=-l vhdl
 
-all: verilog
+all: wbgen2 dirs verilog hash
+
+check: wbgen2 dirs verilog hash
+	tests/verify_output_up_to_date.sh
 
 wbgen2:
 	$(MAKE) -C tools/wishbone-gen
 
-vhdl:
+dirs:
 	mkdir -p ./rtl
 	mkdir -p ./sw
 	mkdir -p ./docs
+
+hash:
+	sha256sum $(SOURCE) > .buildhash
+
+vhdl:
 	$(WBGEN2) \
 		$(FLAGS) \
 		-l vhdl \
@@ -22,12 +32,8 @@ vhdl:
 		-V $(VHDLTARGET) \
 		-C $(SWTARGET) \
 		$(SOURCE)
-	sha256sum $(SOURCE) > .buildhash
 
 verilog:
-	mkdir -p ./rtl
-	mkdir -p ./sw
-	mkdir -p ./docs
 	$(WBGEN2) \
 		$(FLAGS) \
 		-l verilog \
@@ -35,11 +41,9 @@ verilog:
 		-V $(VERILOGTARGET) \
 		-C $(SWTARGET) \
 		$(SOURCE)
-	sha256sum $(SOURCE) > .buildhash
-	
+
 clean:
 	rm -f \
 		$(SWTARGET) $(DOCTARGET) \
 		$(VERILOGTARGET) \
 		$(VHDLTARGET)
-
