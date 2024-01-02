@@ -24,4 +24,4 @@ If you are running under WSL, and get errors like
 make: *** [Makefile:9: rtl] Error 127
 ```
 this is because git is checking files out with Windows line endings (CRLF) instead of Unix line endings (LF). 
-To fix this, change your git configuration `git config --global core.autocrlf false` and clone a fresh version of the repo to start over with Unix line endings.
+To fix this, change your git configuration `git config --global core.autocrlf false` and clone a fresh version of the repo to start over with Unix line endings (you also can fix it in-place instead, see [this guide](https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings#refreshing-a-repository-after-changing-line-endings).
