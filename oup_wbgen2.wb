@@ -1,126 +1,122 @@
--- here comes our peripheral definition
 peripheral {
--- short (human-readable) name for the peripheral.
-    name = "GPIO Port";
--- a longer description, if you want
-    description = "A sample 32-bit general-purpose bidirectional I/O port, explaining how to use SLV and PASS-THROUGH registers.";
--- name of the target VHDL entity to be generated
-    hdl_entity = "wb_slave_gpio_port";
+    name = "OUP USB Device Controller";
+    description = "An open source USB device controller for FPGAs";
+    hdl_entity = "oup_wb_interface";
+    prefix = "oup";
 
--- prefix for all the generated ports belonging to our peripheral
-    prefix = "gpio";
-
--- Pin direction register. Readable and writable from the bus, readable from the device.
+-- Registers to interface directly with the OUP ULPI HDL module while the USB
+-- device state machine is completed.
     reg {
-        name = "Pin direction register";
-        description = "A register defining the direction of the GPIO potr pins.";
-        prefix = "ddr";
-
--- a single, anonymous field (no prefix) of type SLV.
+        name = "Instruction register";
+        description = "Instruction register. Contains instruction register \
+                       and instruction-related signals.";
+        prefix = "ins";
         field {
-            name = "Pin directions";
-            description = "Each bit in this register defines the direction of corresponding pin of the GPIO port.<br>\
-                                       1 means the pin is an OUTPUT<br>\
-                                       0 means the pin is an INPUT";
-
--- There is (deliberately) no prefix defined for this field. Since we have only one field in the register "ddr", we can omit the prefix.
--- wbgen2 will produce signal names containing only prefixes of the peripheral and the parent register.
-
--- type of our field - std_logic_vector
+            name = "Instruction";
+            description = "Instruction byte. Must be held constant until \
+                           instruction execution is done.";
+            prefix = "instruction";
             type = SLV;
-
--- size - we want 32-bits wide port :)
-            size = 32;
-
--- the field will be readable/writable from the Wishbone bus
-            access_bus = READ_WRITE;
-
--- .. and readable from the peripheral
+            size = 8;
+            align = 8;
+            -- type of our field - PASS_THROUGH. In this mode, the slave core
+            -- is not storing the register value. Instead it provides the raw
+            -- value (taken from the wishbone data input) and a strobe signal,
+            -- asserted for single clock cycle upon write operation to the
+            -- register.
+        };
+        field {
+            name = "Execute";
+            description = "Execute bit. To execute instruction, assert for \
+                           one cycle.<br>\
+                              1 means execute next clock cycle.<br>\
+                              0 means don't execute.<br>\
+                           This bit always reads 0.";
+            type = MONOSTABLE;
+            prefix = "exec";
+            access_bus = WRITE_ONLY;
             access_dev = READ_ONLY;
         };
-    };
-
--- Pin input state register. Readable the bus, writable from the device.
-    reg {
-        name = "Pin input state register";
-        description = "A register containing the current state of input pins.";
-        prefix = "psr";
-
--- a single, anonymous field (no prefix) of type SLV.
         field {
-            name = "Pin input state";
-            description = "Each bit in this register reflects the state of corresponding GPIO port pin.";
-
--- no prefix here as well (see above)
-
--- type of our field - std_logic_vector
-            type = SLV;
-
--- size - we want 32-bits wide port :)
-            size = 32;
-
--- the field will be readable from the Wishbone bus
+            name = "Reset";
+            description = "Resets the ULPI state machine. Write 1 to \
+                           activate, then wait for exec_done to be \
+                           set. There is no need to write a 0. This bit \
+                           always reads 0.";
+            type = MONOSTABLE;
+            prefix = "reset";
+            access_bus = WRITE_ONLY;
+            access_dev = READ_ONLY;
+        };
+        field {
+            name = "Execution done";
+            description = "Execution done bit.<br>\
+                              1 means the execution is done.<br>\
+                              0 means the execution is not done yet.";
+            type = BIT;
+            prefix = "exec_done";
             access_bus = READ_ONLY;
-
--- .. and writable from the peripheral
+            access_dev = WRITE_ONLY;
+        };
+        field {
+            name = "Execution aborted";
+            description = "Execution aborted bit.<br>\
+                              1 means the execution was aborted.<br>\
+                              0 means the execution was successful.";
+            type = BIT;
+            prefix = "exec_aborted";
+            access_bus = READ_ONLY;
+            access_dev = WRITE_ONLY;
+        };
+    };
+    reg {
+        name = "ULPI phy configuration register";
+        description = "Holds read and write values from the last ULPI \
+                       configuration register read or write. Also holds \
+                       the RX command byte";
+        prefix = "phyreg";
+        field {
+            name = "Address field";
+            description = "Address on the ULPI configuration memory<br>\
+                           If you issue a register write instruction, the \
+                           address written will be the last address you wrote \
+                           to this register, regardless of the value you read \
+                           in this register.";
+            prefix = "addr";
+            type = SLV;
+            size = 8;
+            align = 8;
+            access_bus = READ_WRITE;
+            access_dev = READ_WRITE;
+            load = LOAD_EXT;
+        };
+        field {
+            name = "Data field";
+            description = "Data present on the ULPI configuration register \
+                           being addressed by the address field.<br>\
+                           If you issue a register write instruction, the \
+                           data written will be the last data you wrote to \
+                           this register, regardless of the value you read \
+                           in this register.";
+            prefix = "data";
+            type = SLV;
+            size = 8;
+            align = 8;
+            access_bus = READ_WRITE;
+            access_dev = READ_WRITE;
+            load = LOAD_EXT;
+        };
+        field {
+            name = "USB PHY RX command byte";
+            description = "USB PHY RX command byte. \
+                           Defined in table 7 of standard.";
+            prefix = "rx_cmd_byte";
+            type = SLV;
+            size = 8;
+            align = 8;
+            access_bus = READ_ONLY;
             access_dev = WRITE_ONLY;
         };
     };
 
--- Port output register. Shows how to use PASS-THROUGH regs
-    reg {
-        name = "Port output register";
-        description = "Register containing the output pin state.";
-        prefix = "pdr";
-
--- a single, anonymous field (no prefix) of type PASS-THROUGH.
-        field {
-
-            name = "Port output value";
-
--- the description isn't really necessary here :)       
---          description = "Writing '1' sets the corresponding GPIO pin to '1'";
-
--- type of our field - PASS_THROUGH. In this mode, the slave core is not storing the register value. 
--- Instead it provides the raw value (taken directly from the Wishbone data input) and a strobe signal, 
--- asserted for single clock cycle upon write operation to the register. The Wishbone data input will be 
--- fed directly to gpio_pdr_o and each write operation to this register will generate a single-cycle positive
--- pulse on gpio_pdr_wr_o signal.
-            type = PASS_THROUGH;
-
-            size = 32;
-
--- access flags don't apply for the PASS-THROUGH regsiters, so we can omit them.
-        };
-    };
-
-
--- Set output register. Shows how to use PASS-THROUGH regs
-    reg {
-        name = "Set output pin register";
-        description = "Writing '1' sets the corresponding GPIO pin to '1'";
-        prefix = "sopr";
-
--- Our driver developer would want these two (SOPR and COPR) registers' addresses to be aligned to multiple of 4 :)
-        align = 4;
-
-        field {
-            name = "Set output pin register";
-            type = PASS_THROUGH;
-            size = 32;
-        };
-    };
-
--- Clear output register. Designed identically as the previous reg.
-    reg {
-        name = "Clear output pin register";
-        description = "Writing '1' clears the corresponding GPIO pin";
-        prefix = "copr";
-
-        field {
-            name = "Clear output pin register";
-            type = PASS_THROUGH;
-            size = 32;
-        };
-    };
 };
