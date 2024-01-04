@@ -14,7 +14,7 @@ VHDLFLAGS=-l vhdl
 .DELETE_ON_ERROR:
 
 .PHONY: all
-all: $(WBGEN2) $(VERILOGTARGET) .buildhash
+all: .buildhash
 
 .PHONY: check
 check: all
@@ -23,10 +23,10 @@ check: all
 $(WBGEN2):
 	$(MAKE) -C tools/wishbone-gen
 
-.buildhash:
+.buildhash: $(VERILOGTARGET)
 	sha256sum $(SOURCE) > .buildhash
 
-$(VHDLTARGET):
+$(VHDLTARGET): $(WBGEN2)
 	mkdir -p ./rtl
 	mkdir -p ./sw
 	mkdir -p ./docs
@@ -38,7 +38,7 @@ $(VHDLTARGET):
 		-C $(SWTARGET) \
 		$(SOURCE)
 
-$(VERILOGTARGET):
+$(VERILOGTARGET): $(WBGEN2)
 	mkdir -p ./rtl
 	mkdir -p ./sw
 	mkdir -p ./docs
