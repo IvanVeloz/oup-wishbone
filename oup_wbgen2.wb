@@ -1,7 +1,7 @@
 peripheral {
     name = "OUP USB Device Controller";
     description = "An open source USB device controller for FPGAs";
-    hdl_entity = "oup_wb_interface";
+    hdl_entity = "oup_wishbone";
     prefix = "oup";
 
 -- Registers to interface directly with the OUP ULPI HDL module while the USB
