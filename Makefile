@@ -3,7 +3,7 @@ SOURCE="oup_wbgen2.wb"
 
 VHDLTARGET="rtl/oup_wishbone.vhd"
 VERILOGTARGET="rtl/oup_wishbone.v"
-SWTARGET="sw/oup_wishbone.h"
+SWTARGET="sw/oup_wishbone_reg.h"
 DOCTARGET="docs/oup_wishbone.htm"
 
 FLAGS=-f html -H signals
