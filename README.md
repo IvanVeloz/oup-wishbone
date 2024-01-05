@@ -20,6 +20,6 @@ If you are running under WSL, and get errors like
 make: *** [Makefile:9: rtl] Error 127
 ```
 this is because git is checking files out with Windows line endings (CRLF) instead of Unix line endings (LF). 
-To fix this, change your git configuration `git config --global core.autocrlf false` and clone a fresh version of the repo to start over with Unix line endings. If you are still running into issues, install dos2unix (`sudo apt-get install dos2unix`) and convert the files `dos2unix tools/wishbone-gen/*`.
+To fix this, install dos2unix (`sudo apt-get install dos2unix`) and convert the files `dos2unix tools/wishbone-gen/*`.
 
 If you are running under WSL and your git commits have executables that fail to run under Linux, make sure you are working on the Linux filesystem on WSL (that is, make sure you are not working on `/mnt/c/` or similar Windows filesystems).
